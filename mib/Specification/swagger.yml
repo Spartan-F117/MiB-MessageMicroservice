@@ -1,0 +1,35 @@
+openapi: 3.0.1
+
+info:
+  title: Message Service API
+  description: Message Microservice of Message in a Bottle Application
+  version: 0.2-oas3
+
+servers:
+  - url: /
+
+paths:
+  /mailbox:
+    post:
+      tags: [ Message ]
+      summary: show messages
+      operationId: mib.resource.message.mailbox
+      requestBody:
+        description: show messages
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                filter:
+                  type: string
+      description: |
+        messages info
+      responses:
+        201:
+          description: you can't see this information
+        202:
+          description: messages retrived correctly
