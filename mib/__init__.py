@@ -99,7 +99,7 @@ def create_app():
     # registering to api app all specifications
     register_specifications(api_app)
 
-    create_celery(app)
+    #create_celery(app)
     return app
 
 
