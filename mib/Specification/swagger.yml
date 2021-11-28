@@ -105,3 +105,24 @@ paths:
           description: message sent
         303:
           description: message not sent
+  /calendar:
+    get:
+      tags: [ Message ]
+      summary: Show calendar
+      operationId: mib.resource.message.calendar
+      requestBody:
+        description: show messages in calendar
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      description: Shows sent and received messages to the user in the calendar
+      responses:
+        302:
+          description: successfully renders the calendar page if the result of matching criteria is alright
+        400:
+          description: bad request. If user didn't logged it will be redirected to the login page

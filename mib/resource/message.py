@@ -123,9 +123,30 @@ def send_message():
     response["message"] = "message sent"
     return jsonify(response), 202
 
+def calendar():
+    post_data = request.get_json()
+    id = post_data.get('id')
 
+    _sentMessages = db.session.query(Message).filter(Message.sender_id == id).filter(Message.is_draft == False)#.filter(Message.deleted==False)
+    _recMessages = db.session.query(Message).filter(Message.receiver_id == id).filter(Message.is_draft == False).filter(Message.delivery_date <= date.today()).filter(Message.deleted == False)
 
+    # _sentMessages = db.session.query(Message,User).filter(Message.sender_id == current_user.id).filter(Message.is_draft == False).filter(Message.receiver_id==User.id)
+    # _recMessages = db.session.query(Message,User).filter(Message.receiver_id == current_user.id).filter(Message.is_draft == False).filter(Message.sender_id==User.id).filter(Message.delivery_date<=date.today()).filter(Message.deleted==False)
 
+    # Contains a list of dict [{'todo' : 'Title'}, {'date' : 'date'}, {'msgID' : 'messageID'}]
+    events = []
 
+    for message in _sentMessages:
+        events.append({'todo' : "Sent: " + str(message.sender_nickname), 'date' : str(message.delivery_date), 'msgID' : str(message.message_id)})
 
+    for message in _recMessages:
+        events.append({'todo' : "Received: " + str(message.receiver_nickname), 'date' : str(message.delivery_date), 'msgID' : str(message.message_id)})
+
+    response = {
+        'events': events
+    }
+
+    response_code = 302
+
+    return jsonify(response), response_code
 
