@@ -44,11 +44,6 @@ def mailbox():
     for item in _draftMessage:
         listobj_draftMessages.append(item.serialize())
 
-    response = {
-        'received_message': '',
-        'sent_message': listobj_sentMessages,
-        'draft_message': listobj_draftMessages
-    }
 
     response_code = 201
 
@@ -65,20 +60,28 @@ def mailbox():
             if control_flag == 0:
                 new_rec_list.append(message.serialize())
             print(new_rec_list)
-        response['recived_message']=new_rec_list
+        response = {
+            'received_message': new_rec_list,
+            'sent_message': listobj_sentMessages,
+            'draft_message': listobj_draftMessages
+        }
     else:
         listobj = []
 
         for item in _recMessages:
             listobj.append(item.serialize())
-        response['recived_message']=listobj
-
-
+        
+        response = {
+            'received_message': listobj,
+            'sent_message': listobj_sentMessages,
+            'draft_message': listobj_draftMessages
+        }
+    print(response)
     response_code=202
     return jsonify(response), response_code
     
 
-def delete_draft_message(draft_id):
+def delete_message(draft_id):
     db.session.query(Message).filter(Message.message_id==draft_id).delete()    
     response_code = 200
     return response_code
@@ -97,8 +100,6 @@ def send_message():
         'message': 'message not sent'
     }
 
-    print("here")
-
     post_data = request.get_json()
     sender_id = post_data.get('sender_id')
     sender_nickname = post_data.get('sender_nickanme')
@@ -106,7 +107,7 @@ def send_message():
     receiver_nickname = post_data.get('receiver_nickname')
     body = post_data.get('body')
     delivery_date = post_data.get('delivery_date')
-    image = post_data.get('image')
+    image = post_data.get('image')[2:-1]
     
     new_message = Message()
     new_message.sender_id = sender_id
@@ -117,15 +118,99 @@ def send_message():
     new_message.delivery_date = datetime.datetime.fromisoformat(delivery_date)
     new_message.image = image
     new_message.is_draft = False
+    new_message.deleted = False
 
     db.session.add(new_message)
     db.session.commit()
     response["message"] = "message sent"
     return jsonify(response), 202
 
+def draft_message():
+    response = {
+        'message': 'message not drafted'
+    }
 
+    post_data = request.get_json()
+    sender_id = post_data.get('sender_id')
+    sender_nickname = post_data.get('sender_nickanme')
+    receiver_id = post_data.get('receiver_id')
+    receiver_nickname = post_data.get('receiver_nickname')
+    body = post_data.get('body')
+    delivery_date = post_data.get('delivery_date')
+    image = post_data.get('image')[2:-1]
+    
+    new_message = Message()
+    new_message.sender_id = sender_id
+    new_message.sender_nickname = sender_nickname
+    new_message.receiver_id = receiver_id
+    new_message.receiver_nickname = receiver_nickname
+    new_message.body = body
+    new_message.delivery_date = datetime.datetime.fromisoformat(delivery_date)
+    new_message.image = image
+    new_message.is_draft = True
+    new_message.deleted = False
 
+    db.session.add(new_message)
+    db.session.commit()
+    response["message"] = "message drafted"
+    return jsonify(response), 202
 
+def send_draft_message():
+    response = {
+        'message': 'message not sent'
+    }
 
+    post_data = request.get_json()
+    sender_id = post_data.get('sender_id')
+    sender_nickname = post_data.get('sender_nickanme')
+    receiver_id = post_data.get('receiver_id')
+    receiver_nickname = post_data.get('receiver_nickname')
+    body = post_data.get('body')
+    delivery_date = post_data.get('delivery_date')
+    image = post_data.get('image')[2:-1]
+    draft_id = post_data.get('draft_id')
+    
+    new_message = db.session.query(Message).filter(Message.message_id==draft_id).first()
+    new_message.sender_id = sender_id
+    new_message.sender_nickname = sender_nickname
+    new_message.receiver_id = receiver_id
+    new_message.receiver_nickname = receiver_nickname
+    new_message.body = body
+    new_message.delivery_date = datetime.datetime.fromisoformat(delivery_date)
+    new_message.image = image
+    new_message.is_draft = False
+    new_message.deleted = False
+
+    db.session.commit()
+    response["message"] = "draft message sent"
+    return jsonify(response), 202
+
+def update_draft_message():
+    response = {
+        'message': 'message not sent'
+    }
+
+    post_data = request.get_json()
+    sender_id = post_data.get('sender_id')
+    sender_nickname = post_data.get('sender_nickanme')
+    receiver_id = post_data.get('receiver_id')
+    receiver_nickname = post_data.get('receiver_nickname')
+    body = post_data.get('body')
+    delivery_date = post_data.get('delivery_date')
+    image = post_data.get('image')[2:-1]
+    draft_id = post_data.get('draft_id')
+    
+    new_message = db.session.query(Message).filter(Message.message_id==draft_id).first()
+    new_message.sender_id = sender_id
+    new_message.sender_nickname = sender_nickname
+    new_message.receiver_id = receiver_id
+    new_message.receiver_nickname = receiver_nickname
+    new_message.body = body
+    new_message.delivery_date = datetime.datetime.fromisoformat(delivery_date)
+    new_message.image = image
+
+    db.session.commit()
+    response["message"] = "draft message update"
+    return jsonify(response), 202
 
 

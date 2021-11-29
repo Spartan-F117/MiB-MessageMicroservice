@@ -33,11 +33,11 @@ paths:
           description: you can't see this information
         202:
           description: messages retrived correctly
-  /delete_draft_message/{draft_id}:
+  /delete_message/{draft_id}:
     get:
       tags: [ Message ]
       description: delete drfat message by its id
-      operationId: mib.resource.message.delete_draft_message
+      operationId: mib.resource.message.delete_message
       parameters:
         - name: draft_id
           description: Draft message Unique id
@@ -99,9 +99,145 @@ paths:
                 image:
                   type: string
       description: |
-        add user to blacklist
+        add message
       responses:
         202:
           description: message sent
         303:
           description: message not sent
+  /draft_message:
+    post:
+      tags: [ Message ]
+      summary: draft message
+      operationId: mib.resource.message.draft_message
+      requestBody:
+        description: message drafted
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender_id
+                - sender_nickname
+                - receiver_id
+                - receiver_nickname
+                - body
+                - delivery_date
+                - image
+              properties:
+                sender_id:
+                  type: string
+                sender_nickname:
+                  type: string
+                receiver_id:
+                  type: string
+                receiver_nickname:
+                  type: string
+                body:
+                  type: string
+                delivery_date:
+                  type: string
+                image:
+                  type: string
+      description: |
+        draft message
+      responses:
+        202:
+          description: message drafted
+        303:
+          description: message not drafted
+  /send_draft_message:
+    post:
+      tags: [ Message ]
+      summary: send draft message
+      operationId: mib.resource.message.send_draft_message
+      requestBody:
+        description: send a draft message 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender_id
+                - sender_nickname
+                - receiver_id
+                - receiver_nickname
+                - body
+                - delivery_date
+                - image
+                - draft_id
+              properties:
+                sender_id:
+                  type: string
+                sender_nickname:
+                  type: string
+                receiver_id:
+                  type: string
+                receiver_nickname:
+                  type: string
+                body:
+                  type: string
+                delivery_date:
+                  type: string
+                image:
+                  type: string
+                draft_id:
+                  type: string
+      description: |
+        send a draft message
+      responses:
+        202:
+          description: draft message sent
+        303:
+          description: draft message not sent
+  /update_draft_message:
+    post:
+      tags: [ Message ]
+      summary: update draft message
+      operationId: mib.resource.message.update_draft_message
+      requestBody:
+        description: update a draft message 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender_id
+                - sender_nickname
+                - receiver_id
+                - receiver_nickname
+                - body
+                - delivery_date
+                - image
+                - draft_id
+              properties:
+                sender_id:
+                  type: string
+                sender_nickname:
+                  type: string
+                receiver_id:
+                  type: string
+                receiver_nickname:
+                  type: string
+                body:
+                  type: string
+                delivery_date:
+                  type: string
+                image:
+                  type: string
+                draft_id:
+                  type: string
+      description: |
+        update a draft message
+      responses:
+        202:
+          description: draft message update
+        303:
+          description: draft message not update
+
+
+
+
