@@ -237,7 +237,49 @@ paths:
           description: draft message update
         303:
           description: draft message not update
-
-
-
+  /delete_received_message/{id}:
+    get:
+      tags: [ Message ]
+      description: delete received message by its id
+      operationId: mib.resource.message.delete_received_message
+      parameters:
+        - name: id
+          description: received message Unique id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Delete done
+  /open_received_message/{id}:
+    get:
+      tags: [ Message ]
+      description: opne received message by its id
+      operationId: mib.resource.message.open_received_message
+      parameters:
+        - name: id
+          description: open message Unique id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: open done
+  /open_send_message/{id}:
+    get:
+      tags: [ Message ]
+      description: open send message by its id
+      operationId: mib.resource.message.open_send_message
+      parameters:
+        - name: id
+          description: open message Unique id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: open done
 

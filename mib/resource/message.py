@@ -1,4 +1,5 @@
 import json
+from os import memfd_create
 from mib.db_model.message_db import Message, db
 from flask import jsonify, request
 import datetime
@@ -83,6 +84,7 @@ def mailbox():
 
 def delete_message(draft_id):
     db.session.query(Message).filter(Message.message_id==draft_id).delete()    
+    db.session.commit()
     response_code = 200
     return response_code
 
@@ -102,7 +104,7 @@ def send_message():
 
     post_data = request.get_json()
     sender_id = post_data.get('sender_id')
-    sender_nickname = post_data.get('sender_nickanme')
+    sender_nickname = post_data.get('sender_nickname')
     receiver_id = post_data.get('receiver_id')
     receiver_nickname = post_data.get('receiver_nickname')
     body = post_data.get('body')
@@ -132,7 +134,7 @@ def draft_message():
 
     post_data = request.get_json()
     sender_id = post_data.get('sender_id')
-    sender_nickname = post_data.get('sender_nickanme')
+    sender_nickname = post_data.get('sender_nickname')
     receiver_id = post_data.get('receiver_id')
     receiver_nickname = post_data.get('receiver_nickname')
     body = post_data.get('body')
@@ -162,7 +164,7 @@ def send_draft_message():
 
     post_data = request.get_json()
     sender_id = post_data.get('sender_id')
-    sender_nickname = post_data.get('sender_nickanme')
+    sender_nickname = post_data.get('sender_nickname')
     receiver_id = post_data.get('receiver_id')
     receiver_nickname = post_data.get('receiver_nickname')
     body = post_data.get('body')
@@ -192,7 +194,7 @@ def update_draft_message():
 
     post_data = request.get_json()
     sender_id = post_data.get('sender_id')
-    sender_nickname = post_data.get('sender_nickanme')
+    sender_nickname = post_data.get('sender_nickname')
     receiver_id = post_data.get('receiver_id')
     receiver_nickname = post_data.get('receiver_nickname')
     body = post_data.get('body')
@@ -213,4 +215,46 @@ def update_draft_message():
     response["message"] = "draft message update"
     return jsonify(response), 202
 
+def delete_received_message(id):
+    message = db.session.query(Message).filter(Message.message_id==id).first()   
+    message.deleted = True
+    db.session.commit()
+    response_code = 200
+    return response_code
+
+def open_received_message(id):
+    message_new = db.session.query(Message).filter(Message.message_id==id).first()
+    message_new.opened = True
+    db.session.commit()
+
+    message = db.session.query(Message).filter(Message.message_id==id)
+
+    listobj = []
+    for item in message:
+        listobj.append(item.serialize())
+
+    response = {
+            'received_message': listobj
+        }
+
+    print(response)
+
+    return jsonify(response)
+
+def open_send_message(id):
+    message = db.session.query(Message).filter(Message.message_id==id) 
+    message.opened = True
+    db.session.commit()
+
+    listobj = []
+    for item in message:
+        listobj.append(item.serialize())
+
+    response = {
+            'send_message': listobj
+        }
+
+    print(response)
+
+    return jsonify(response)
 
