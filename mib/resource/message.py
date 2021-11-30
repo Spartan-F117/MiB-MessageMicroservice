@@ -50,13 +50,14 @@ def mailbox():
 
     # remove the messages that don't respect the filter word list
     if _filter_word != "":
+        print(_filter_word)
         for message in _recMessages.all():
             print(message)
-            new_filter_word_list = _filter_word.first().list.split(',')
+            new_filter_word_list = _filter_word.split(',')
             control_flag = 0
             for elem in new_filter_word_list:
                 if elem != "":
-                    if elem in message[0].body:
+                    if elem in message.body:
                         control_flag = 1
             if control_flag == 0:
                 new_rec_list.append(message.serialize())
@@ -77,7 +78,6 @@ def mailbox():
             'sent_message': listobj_sentMessages,
             'draft_message': listobj_draftMessages
         }
-    print(response)
     response_code=202
     return jsonify(response), response_code
     
