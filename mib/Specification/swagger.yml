@@ -288,4 +288,19 @@ paths:
       summary: Show calendar
       operationId: mib.resource.message.calendar
       requestBody:
-        description: show messages in calendar
+        description: message drafted
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: string
+      responses:
+        '302':
+          description: sussesfully render
+        '400':
+          description: user not logged
