@@ -33,11 +33,11 @@ paths:
           description: you can't see this information
         202:
           description: messages retrived correctly
-  /delete_draft_message/{draft_id}:
+  /delete_message/{draft_id}:
     get:
       tags: [ Message ]
       description: delete drfat message by its id
-      operationId: mib.resource.message.delete_draft_message
+      operationId: mib.resource.message.delete_message
       parameters:
         - name: draft_id
           description: Draft message Unique id
@@ -99,12 +99,189 @@ paths:
                 image:
                   type: string
       description: |
-        add user to blacklist
+        add message
       responses:
         202:
           description: message sent
         303:
           description: message not sent
+  /draft_message:
+    post:
+      tags: [ Message ]
+      summary: draft message
+      operationId: mib.resource.message.draft_message
+      requestBody:
+        description: message drafted
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender_id
+                - sender_nickname
+                - receiver_id
+                - receiver_nickname
+                - body
+                - delivery_date
+                - image
+              properties:
+                sender_id:
+                  type: string
+                sender_nickname:
+                  type: string
+                receiver_id:
+                  type: string
+                receiver_nickname:
+                  type: string
+                body:
+                  type: string
+                delivery_date:
+                  type: string
+                image:
+                  type: string
+      description: |
+        draft message
+      responses:
+        202:
+          description: message drafted
+        303:
+          description: message not drafted
+  /send_draft_message:
+    post:
+      tags: [ Message ]
+      summary: send draft message
+      operationId: mib.resource.message.send_draft_message
+      requestBody:
+        description: send a draft message 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender_id
+                - sender_nickname
+                - receiver_id
+                - receiver_nickname
+                - body
+                - delivery_date
+                - image
+                - draft_id
+              properties:
+                sender_id:
+                  type: string
+                sender_nickname:
+                  type: string
+                receiver_id:
+                  type: string
+                receiver_nickname:
+                  type: string
+                body:
+                  type: string
+                delivery_date:
+                  type: string
+                image:
+                  type: string
+                draft_id:
+                  type: string
+      description: |
+        send a draft message
+      responses:
+        202:
+          description: draft message sent
+        303:
+          description: draft message not sent
+  /update_draft_message:
+    post:
+      tags: [ Message ]
+      summary: update draft message
+      operationId: mib.resource.message.update_draft_message
+      requestBody:
+        description: update a draft message 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender_id
+                - sender_nickname
+                - receiver_id
+                - receiver_nickname
+                - body
+                - delivery_date
+                - image
+                - draft_id
+              properties:
+                sender_id:
+                  type: string
+                sender_nickname:
+                  type: string
+                receiver_id:
+                  type: string
+                receiver_nickname:
+                  type: string
+                body:
+                  type: string
+                delivery_date:
+                  type: string
+                image:
+                  type: string
+                draft_id:
+                  type: string
+      description: |
+        update a draft message
+      responses:
+        202:
+          description: draft message update
+        303:
+          description: draft message not update
+  /delete_received_message/{id}:
+    get:
+      tags: [ Message ]
+      description: delete received message by its id
+      operationId: mib.resource.message.delete_received_message
+      parameters:
+        - name: id
+          description: received message Unique id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Delete done
+  /open_received_message/{id}:
+    get:
+      tags: [ Message ]
+      description: opne received message by its id
+      operationId: mib.resource.message.open_received_message
+      parameters:
+        - name: id
+          description: open message Unique id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: open done
+  /open_send_message/{id}:
+    get:
+      tags: [ Message ]
+      description: open send message by its id
+      operationId: mib.resource.message.open_send_message
+      parameters:
+        - name: id
+          description: open message Unique id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: open done
   /calendar:
     get:
       tags: [ Message ]
@@ -112,17 +289,3 @@ paths:
       operationId: mib.resource.message.calendar
       requestBody:
         description: show messages in calendar
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-      description: Shows sent and received messages to the user in the calendar
-      responses:
-        302:
-          description: successfully renders the calendar page if the result of matching criteria is alright
-        400:
-          description: bad request. If user didn't logged it will be redirected to the login page
