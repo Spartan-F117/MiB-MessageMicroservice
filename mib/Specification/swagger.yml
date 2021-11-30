@@ -282,4 +282,10 @@ paths:
       responses:
         200:
           description: open done
-
+  /calendar:
+    get:
+      tags: [ Message ]
+      summary: Show calendar
+      operationId: mib.resource.message.calendar
+      requestBody:
+        description: show messages in calendar
