@@ -6,7 +6,7 @@ version: "3.6"
 
 services:
   db:
-    image: postgres:13
+    image: postgres:14
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -29,11 +29,12 @@ services:
       - env_file
     environment:
       - POSTGRES_HOST=db
+      - FLASK_ENV=production
     depends_on:
       - db
       - migrations
-    volumes:
-      - .:/app
+      - redis
+
   migrations:
     #
     # this service is used to apply migrations on db
@@ -45,6 +46,32 @@ services:
     environment:
       - POSTGRES_HOST=db
     restart: on-failure
+
+  redis_message:
+    container_name: redis_message
+    image: redis:alpine
+    hostname: redis
+    ports:
+      - "6379:6380"
+
+  celery_worker_message:
+    build:
+      context: .
+    hostname: worker
+    entrypoint: celery
+    command: -b "redis://redis:6380" -A wsgi.celery_app worker --loglevel=info
+    links:
+      - redis_message
+    depends_on:
+      - redis_message
+
+  celery_beat_message:
+    build:
+      context: .
+    command: celery -b "redis://redis:6380" -A wsgi.celery_app beat --loglevel=info
+    depends_on:
+      - redis_message
+
 
 # Declaring all volumes
 volumes:
