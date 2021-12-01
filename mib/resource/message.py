@@ -129,30 +129,66 @@ def send_message():
 
 
 def calendar():
+
     post_data = request.get_json()
     id = post_data.get('id')
+    _filter_word = post_data.get('filter')
 
     _sentMessages = db.session.query(Message).filter(Message.sender_id == id).filter(Message.is_draft == False)#.filter(Message.deleted==False)
     _recMessages = db.session.query(Message).filter(Message.receiver_id == id).filter(Message.is_draft == False).filter(Message.delivery_date <= date.today()).filter(Message.deleted == False)
 
-    # _sentMessages = db.session.query(Message,User).filter(Message.sender_id == current_user.id).filter(Message.is_draft == False).filter(Message.receiver_id==User.id)
-    # _recMessages = db.session.query(Message,User).filter(Message.receiver_id == current_user.id).filter(Message.is_draft == False).filter(Message.sender_id==User.id).filter(Message.delivery_date<=date.today()).filter(Message.deleted==False)
-
     # Contains a list of dict [{'todo' : 'Title'}, {'date' : 'date'}, {'msgID' : 'messageID'}]
     events = []
 
-    for message in _sentMessages:
-        events.append({'todo' : "Sent: " + str(message.sender_nickname), 'date' : str(message.delivery_date), 'msgID' : str(message.message_id)})
+    new_rec_list = []
 
-    for message in _recMessages:
-        events.append({'todo' : "Received: " + str(message.receiver_nickname), 'date' : str(message.delivery_date), 'msgID' : str(message.message_id)})
+    listobj_sentMessages = []
 
-    response = {
-        'events': events
-    }
+    for item in _sentMessages:
+        listobj_sentMessages.append(item.serialize())
 
-    response_code = 302
+    response_code = 201
 
+    # remove the messages that don't respect the filter word list
+    if _filter_word != "":
+        print(_filter_word)
+        for message in _recMessages.all():
+            print(message)
+            new_filter_word_list = _filter_word.split(',')
+            control_flag = 0
+            for elem in new_filter_word_list:
+                if elem != "":
+                    if elem in message.body:
+                        control_flag = 1
+            if control_flag == 0:
+                new_rec_list.append(message.serialize())
+            print(new_rec_list)
+        
+        for message in listobj_sentMessages:
+            events.append({'todo' : "Sent: " + str(message['sender_nickname']), 'date' : str(message['delivery_date']), 'msgID' : str(message['message_id'])})
+
+        for message in new_rec_list:
+            events.append({'todo' : "Received: " + str(message['receiver_nickname']), 'date' : str(message['delivery_date']), 'msgID' : str(message['message_id'])})
+
+        response = {
+            'events': events
+        }
+    else:
+        listobj = []
+
+        for item in _recMessages:
+            listobj.append(item.serialize())
+        
+        for message in _sentMessages:
+            events.append({'todo' : "Sent: " + str(message.sender_nickname), 'date' : str(message.delivery_date), 'msgID' : str(message.message_id)})
+
+        for message in _recMessages:
+            events.append({'todo' : "Received: " + str(message.receiver_nickname), 'date' : str(message.delivery_date), 'msgID' : str(message.message_id)})
+
+        response = {
+            'events': events
+        }
+    response_code=202
     return jsonify(response), response_code
 
 def draft_message():

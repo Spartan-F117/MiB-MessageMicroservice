@@ -283,24 +283,26 @@ paths:
         200:
           description: open done
   /calendar:
-    get:
+    post:
       tags: [ Message ]
-      summary: Show calendar
+      summary: show messages
       operationId: mib.resource.message.calendar
       requestBody:
-        description: message drafted
+        description: show messages
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - id
               properties:
                 id:
                   type: string
+                filter:
+                  type: string
+      description: |
+        messages info
       responses:
-        '302':
-          description: sussesfully render
-        '400':
-          description: user not logged
+        201:
+          description: you can't see this information
+        202:
+          description: messages retrived correctly
