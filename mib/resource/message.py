@@ -8,20 +8,20 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import base64
 
 
-def check_none(**kwargs):
-    for name, arg in zip(kwargs.keys(), kwargs.values()):
-        if arg is None:
-            raise ValueError('You can\'t set %s argument to None' % name)
+# def check_none(**kwargs):
+#     for name, arg in zip(kwargs.keys(), kwargs.values()):
+#         if arg is None:
+#             raise ValueError('You can\'t set %s argument to None' % name)
 
 
-def validate_date(date_text):
-    try:
-        print(date_text)
-        if date_text != datetime.strptime(date_text, "%Y-%m-%d").strftime('%Y-%m-%d'):
-            raise ValueError
-        return True
-    except ValueError:
-        return False
+# def validate_date(date_text):
+#     try:
+#         print(date_text)
+#         if date_text != datetime.strptime(date_text, "%Y-%m-%d").strftime('%Y-%m-%d'):
+#             raise ValueError
+#         return True
+#     except ValueError:
+#         return False
 
 
 def mailbox():
