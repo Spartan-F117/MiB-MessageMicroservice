@@ -29,7 +29,7 @@ def mailbox():
     id = post_data.get('id')
     _filter_word = post_data.get('filter')
 
-    _sentMessages = db.session.query(Message).filter(Message.sender_id == id).filter(Message.is_draft == False)#.filter(Message.deleted==False)
+    _sentMessages = db.session.query(Message).filter(Message.sender_id == id).filter(Message.is_draft == False).filter(Message.deleted==False)
     _recMessages = db.session.query(Message).filter(Message.receiver_id == id).filter(Message.is_draft == False).filter(Message.delivery_date <= date.today()).filter(Message.deleted == False)
     _draftMessage = db.session.query(Message).filter(Message.sender_id == id).filter(Message.is_draft == True)
 
