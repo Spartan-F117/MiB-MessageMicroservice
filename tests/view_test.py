@@ -5,6 +5,8 @@ from flask.globals import session
 
 
 
+
+
 class ViewTest(unittest.TestCase):
     """
     This class should be implemented by
@@ -18,6 +20,10 @@ class ViewTest(unittest.TestCase):
         from mib import create_app
         app = create_app()
         self.message = app.test_client()
+        import mib.db_model.message_db as Messsage_db
+        self.message_db = Messsage_db
+        from mib.db_model.message_db import Message as mess
+        self.mess = mess
 
     def test_send_message(self):
     
@@ -65,10 +71,12 @@ class ViewTest(unittest.TestCase):
         response = self.message.get("/draft_message_info/1")
         assert response.status_code == 200
 
-    def test_delete_received_message(self):
-    
+    def test_zz_delete_received_message(self):
+
         print('trying sending message....')
-        response = self.message.get("/delete_received_message/2")
+        id=self.message_db.db.session.query(self.mess).first().message_id
+        print(id)
+        response = self.message.get("/delete_received_message/"+str(id))
         assert response.status_code == 200
     
     def test_open_received_message(self):
@@ -93,7 +101,7 @@ class ViewTest(unittest.TestCase):
         response = self.message.post("/mailbox", json=payload)
         assert response.status_code == 202
 
-    def test_mailbox_with_filter(self):
+    def test_zy_mailbox_with_filter(self):
     
         print('trying sending message....')
 
@@ -109,10 +117,10 @@ class ViewTest(unittest.TestCase):
         response = self.message.post("/calendar", json=payload)
         assert response.status_code == 202
 
-    def test_calendar_with_filter(self):
+    def test_zy_calendar_with_filter(self):
     
         print('trying sending message....')
 
-        payload = dict(id='1', filter='hello')
+        payload = dict(id='2', filter='hello')
         response = self.message.post("/calendar", json=payload)
         assert response.status_code == 202
