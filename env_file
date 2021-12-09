@@ -3,6 +3,7 @@
 #
 #------------------------
 FLASK_ENV=production
+APP_SECRET=2929383DmdosfSlsDKfkSl2304ssdfpgmfls302k
 
 #
 # Postgres configuration

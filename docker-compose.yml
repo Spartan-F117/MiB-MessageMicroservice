@@ -29,11 +29,9 @@ services:
       - env_file
     environment:
       - POSTGRES_HOST=db
-      - FLASK_ENV=production
     depends_on:
       - db
       - migrations
-      - redis
 
   migrations:
     #
@@ -51,8 +49,10 @@ services:
     container_name: redis_message
     image: redis:alpine
     hostname: redis
+    command: --port 6380
     ports:
-      - "6379:6380"
+      - "6380:6380"
+
 
   celery_worker_message:
     build:
@@ -62,8 +62,10 @@ services:
     command: -b "redis://redis:6380" -A wsgi.celery_app worker --loglevel=info
     links:
       - redis_message
+      - db
     depends_on:
       - redis_message
+      - db
 
   celery_beat_message:
     build:
